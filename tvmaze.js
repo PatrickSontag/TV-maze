@@ -9,6 +9,9 @@
 
 "use strict";
 
+console.log("is this working?");
+
+
 const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
@@ -24,9 +27,12 @@ const $searchForm = $("#searchForm");
 
 async function getShowsByTerm(searchTerm) {
   // ADD: Remove placeholder & make request to TVMaze search shows API.
+  console.log("is this working 2?");
+
   const response = await axios.get('https://api.tvmaze.com/search/shows?', { params: { q: searchTerm}});
   const data = response.data
   const showsArr = [];
+
 
   console.log(response);
 
@@ -72,12 +78,14 @@ async function getShowsByTerm(searchTerm) {
 function populateShows(shows) {
   $showsList.empty();
 
+  const defaultImg = "http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg";
+
   for (let show of shows) {
     const $nextShow = $(
       `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img 
-              src="http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg" 
+              src="${show.image}" 
               alt="Bletchly Circle San Francisco" 
               class="w-25 mr-3">
            <div class="media-body">
