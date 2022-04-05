@@ -9,13 +9,14 @@
 
 "use strict";
 
-console.log("is this working?");
+console.log("test7");
 
 
 const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
 
+let showsArr = [];
 
 
 /** Given a search term, search for tv shows that match that query.
@@ -27,12 +28,10 @@ const $searchForm = $("#searchForm");
 
 async function getShowsByTerm(searchTerm) {
   // ADD: Remove placeholder & make request to TVMaze search shows API.
-  console.log("is this working 2?");
 
   const response = await axios.get('https://api.tvmaze.com/search/shows?', { params: { q: searchTerm}});
   const data = response.data
-  const showsArr = [];
-
+  showsArr = [];
 
   console.log(response);
 
@@ -41,7 +40,8 @@ async function getShowsByTerm(searchTerm) {
       id: `${item.show.id}`,
       name: `${item.show.name}`,
       summary: `${item.show.summary}`,
-      image: `${item.show.image.medium}`
+      image: `${item.show.image.medium}`,
+      taco: `${item.show.taco}`
     };
 
     showsArr.push(nextShow);
@@ -78,15 +78,17 @@ async function getShowsByTerm(searchTerm) {
 function populateShows(shows) {
   $showsList.empty();
 
-  const defaultImg = "http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg";
+  const defaultImg = "https://media.istockphoto.com/vectors/no-image-available-sign-vector-id922962354?k=20&m=922962354&s=612x612&w=0&h=f-9tPXlFXtz9vg_-WonCXKCdBuPUevOBkp3DQ-i0xqo=";
+
 
   for (let show of shows) {
+
     const $nextShow = $(
       `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img 
               src="${show.image}" 
-              alt="Bletchly Circle San Francisco" 
+              alt="https://unsplash.com/photos/WtolM5hsj14" 
               class="w-25 mr-3">
            <div class="media-body">
              <h5 class="text-primary">${show.name}</h5>
