@@ -13,8 +13,10 @@ console.log("test7");
 
 
 const $showsList = $("#showsList");
-const $episodesArea = $("#episodesArea");
-const $searchForm = $("#searchForm");
+const $episodesArea = $("#episodes-area");
+const $searchForm = $("#search-form");
+const $episodesList = $("#episodes-list");
+
 
 let showsArr = [];
 
@@ -40,9 +42,14 @@ async function getShowsByTerm(searchTerm) {
       id: `${item.show.id}`,
       name: `${item.show.name}`,
       summary: `${item.show.summary}`,
-      image: `${item.show.image.medium}`,
-      taco: `${item.show.taco}`
+      // image: `${item.show.image.medium}`,
     };
+    
+    console.log('img: ', `${item.show.image}`);
+
+    `${item.show.image ? nextShow.image = item.show.image.medium : nextShow.image = "https://tinyurl.com/missing-tv"}`
+    // if(`!${item.show.image}`) { console.log("no image") }  // nextShow.image = "NO IMAGE"
+    // else{ nextShow.image = `${item.show.image.medium}` }
 
     showsArr.push(nextShow);
     nextShow = {};
@@ -78,9 +85,6 @@ async function getShowsByTerm(searchTerm) {
 function populateShows(shows) {
   $showsList.empty();
 
-  const defaultImg = "https://media.istockphoto.com/vectors/no-image-available-sign-vector-id922962354?k=20&m=922962354&s=612x612&w=0&h=f-9tPXlFXtz9vg_-WonCXKCdBuPUevOBkp3DQ-i0xqo=";
-
-
   for (let show of shows) {
 
     const $nextShow = $(
@@ -101,12 +105,14 @@ function populateShows(shows) {
        </div>
       `);
 
-    console.log("show: ", show);
-    console.log("show.id: ", show.id);
-    console.log("show.name: ", show.name);
-    console.log("$nextShow: ", $nextShow)
+      console.log("$nextShow: ", $nextShow)
 
-    $showsList.append($nextShow);  }
+    $showsList.append($nextShow);  
+  }
+
+  // $("#Show-getEpisodes").on("click", getEpisodes);
+
+  let $episodesButton = $("button");
 }
 
 
@@ -115,11 +121,12 @@ function populateShows(shows) {
  */
 
 async function searchForShowAndDisplay() {
-  const term = $("#searchForm-term").val();
+  // const term = $("#searchForm-term").val();
+  const term = $("#search-query").val();
   const shows = await getShowsByTerm(term);
 
-  $episodesArea.hide();
-  populateShows(shows);
+  // $episodesArea.hide();
+  // populateShows(shows);
 }
 
 $searchForm.on("submit", async function (evt) {
@@ -132,8 +139,64 @@ $searchForm.on("submit", async function (evt) {
  *      { id, name, season, number }
  */
 
-// async function getEpisodesOfShow(id) { }
+async function getEpisodesOfShow(id) { 
+
+  // ADD: Remove placeholder & make request to TVMaze search shows API.
+
+  const response = await axios.get(`https://api.tvmaze.com/shows/${id}/episodes`);
+  const data = response.data
+  let episodesArray = [];
+
+  console.log(response);
+  console.log(data);
+
+  for (let item of data) {
+    let nextEpisode = {
+      id: `${item.id}`,
+      name: `${item.name}`,
+      season: `${item.season}`,
+      number: `${item.number}`,
+    };
+
+    episodesArray.push(nextEpisode);
+  }
+
+  console.log(episodesArray);
+
+  // populateEpisodes(episodesArray);
+  return episodesArray;
+
+}
 
 /** Write a clear docstring for this function... */
 
 // function populateEpisodes(episodes) { }
+
+function populateEpisodes(episodes) {
+  $episodesList.empty();
+
+  for (let episode of episodes) {
+
+    const $nextEpisode = $(
+      `<li>
+      ${episode.name} (Season ${episode.season}, Episode ${episode.number}) 
+      </li>
+      `);
+
+      console.log("$nextEpisode: ", $nextEpisode);
+
+    $episodesList.append($nextEpisode);  
+  }
+
+  $episodesArea.show();
+
+}
+
+async function getEpisodes(evt) {
+  console.log("show button click");
+  const showId = $(evt.target).closest(".Show").data("show-id");
+  const episodes = await getEpisodesOfShow(showId);
+  populateEpisodes(episodes);
+}
+
+$showsList.on("click", ".Show-getEpisodes", getEpisodes);
